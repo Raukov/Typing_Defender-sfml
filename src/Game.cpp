@@ -18,21 +18,44 @@ void Game::run() {
 
 void Game::processEvents() {
     while (const std::optional event = window.pollEvent()) {
-        if (event->is<sf::Event::Closed>())
+        if (event->is<sf::Event::Closed>()) {
             window.close();
-
-        else if(state == GameState::Menu) 
-        {
-            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-                if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
-                    window.close();
-
-                menu.handleInput(keyPressed->scancode, state);
-            }
+            continue;
         }
-        else if (state == GameState::Playing && event->is<sf::Event::KeyPressed>() && event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::P)
-            isPaused = !isPaused;
-
+        switch (state) {
+        case GameState::Menu: {
+            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+                switch (keyPressed->scancode) {
+                case sf::Keyboard::Scancode::Escape:
+                    window.close();
+                    break;
+                case sf::Keyboard::Scancode::Num1:
+                    state = GameState::Playing;
+                    break;
+                case sf::Keyboard::Scancode::Num3:
+                    exit(0);
+                    break;
+                default:
+                    break;
+                }
+            }
+            break;
+        }
+        case GameState::Playing: {
+            if (event->is<sf::Event::KeyPressed>()) {
+                const auto* keyPressed = event->getIf<sf::Event::KeyPressed>();
+                if (keyPressed && keyPressed->code == sf::Keyboard::Key::P)
+                    isPaused = !isPaused;
+            }
+            break;
+        }
+        case GameState::GameOver: {
+            // Obs³uga stanu GameOver 
+            break;
+        }
+        default:
+            break;
+        }
     }
 }
 

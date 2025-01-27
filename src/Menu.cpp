@@ -1,9 +1,10 @@
 #include "Menu.h"
 
+
 Menu::Menu() : title(font, ""), startOption(font, ""), scoresOption(font, ""), exitOption(font, "") {
     // £adowanie czcionki
-    if (!font.openFromFile("assets/font.ttf")) {
-        throw std::runtime_error("Failed to load font from assets/font.ttf");
+    if (!font.openFromFile("C:/Projects/SFML/Typing_Defender-sfml/src/assets/Arial.ttf")) {
+        throw std::runtime_error("Failed to load font from assets/Arial.ttf");
     }
 
     // Ustawienia tytu³u gry
@@ -24,17 +25,6 @@ Menu::Menu() : title(font, ""), startOption(font, ""), scoresOption(font, ""), e
     exitOption.setFont(font);
     exitOption.setString("3. Exit");
     exitOption.setPosition(sf::Vector2f(300.0f, 300.0f));
-}
-
-void Menu::handleInput(const sf::Keyboard::Scancode keyPressed, Game::GameState& state) {
-
-    if (keyPressed == sf::Keyboard::Scancode::Num1) {
-        state = Game::GameState::Playing;
-    }
-    else if (keyPressed == sf::Keyboard::Scancode::Num3) {
-        exit(0);
-    }
-
 }
 
 void Menu::render(sf::RenderWindow& window) {
