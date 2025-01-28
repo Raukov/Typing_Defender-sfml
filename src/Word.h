@@ -4,10 +4,9 @@
 
 class Word {
 public:
-    Word(const std::string& word, float x, float y);
+    Word(const std::string& word);
 
-    void update(float deltaTime);
-    void render(sf::RenderWindow& window) const;
+    void render(sf::RenderWindow& window, float x, float y) const;
 
     const std::string& getText() const;
     void resetInput();
@@ -17,6 +16,7 @@ public:
 private:
     std::string text;
     std::string currentInput;
-    float posX, posY;
-    float speed;
+
+    sf::Font font;
+    sf::Text wordText;
 };

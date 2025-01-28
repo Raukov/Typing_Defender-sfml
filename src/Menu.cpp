@@ -2,8 +2,10 @@
 
 
 Menu::Menu() : title(font, ""), startOption(font, ""), scoresOption(font, ""), exitOption(font, "") {
+    // Ustaw katalog roboczy na katalog Ÿród³owy
+    std::filesystem::current_path("C:/Projects/SFML/Typing_Defender-sfml/src");
     // £adowanie czcionki
-    if (!font.openFromFile("C:/Projects/SFML/Typing_Defender-sfml/src/assets/Arial.ttf")) {
+    if (!font.openFromFile("assets/Arial.ttf")) {
         throw std::runtime_error("Failed to load font from assets/Arial.ttf");
     }
 

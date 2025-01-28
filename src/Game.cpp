@@ -1,8 +1,10 @@
 #include "Game.h"
-
+#include <iostream>
 Game::Game()
     : window(sf::VideoMode({ 1920u, 1080u }), "Typing Defender"),
-    isPaused(false), state(GameState::Menu) {}
+    isPaused(false), state(GameState::Menu), player(960.0f, 900.0f) {
+}
+
 
 void Game::run() {
     sf::Clock clock;
@@ -42,10 +44,24 @@ void Game::processEvents() {
             break;
         }
         case GameState::Playing: {
-            if (event->is<sf::Event::KeyPressed>()) {
-                const auto* keyPressed = event->getIf<sf::Event::KeyPressed>();
-                if (keyPressed && keyPressed->code == sf::Keyboard::Key::P)
-                    isPaused = !isPaused;
+            if (event->is<sf::Event::TextEntered>()) {
+                char input = static_cast<char>(event->getIf<sf::Event::TextEntered>()->unicode);
+                for (auto& enemy : enemies) {
+                    if (enemy.getWord().processInput(input)) {
+                        if (enemy.getWord().isComplete()) {
+							enemy.setCurrentHealth(enemy.getCurrentHealth() - 5);
+							if (enemy.isDefeated()) {
+								enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& enemy) {
+									return enemy.isDefeated();
+									}), enemies.end());
+								std::cout << "enemy defeated" << std::endl;
+							}
+							std::cout << enemies.size() << std::endl;
+                            player.setAnimation(true); // Animacja ataku
+                        }
+                        break; // Obs³u¿ jedno s³owo na raz
+                    }
+                }
             }
             break;
         }
@@ -60,15 +76,35 @@ void Game::processEvents() {
 }
 
 void Game::update(sf::Time deltaTime) {
-    // Aktualizacja gry (ruch przeciwników, wpisywanie s³ów itd.)
+    SpawnEnemies();
+    for (auto& enemy : enemies) {
+        enemy.update(deltaTime.asSeconds());
+        if (enemy.getWord().isComplete()) {
+            // Przeciwnik pokonany?
+            scoreManager.addScore(10);
+            enemy.getWord().resetInput();
+        }
+    }
 }
 
+void Game::SpawnEnemies() {
+	// Dodaj nowego przeciwnika co 2 sekund
+	if (spawnClock.getElapsedTime().asSeconds() > 2.0f) {
+		enemies.emplace_back("sword", 500.0f, 0.0f);
+		spawnClock.restart();
+	}
+}
 void Game::render() {
     window.clear();
-    if (state == GameState::Menu)
+    if (state == GameState::Menu) {
         menu.render(window);
+    }
     else if (state == GameState::Playing) {
-        // Rysowanie elementów gry
+        player.render(window);
+        for (Enemy& enemy : enemies) { 
+            enemy.render(window);
+        }
     }
     window.display();
 }
+

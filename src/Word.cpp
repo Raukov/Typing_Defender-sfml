@@ -1,20 +1,18 @@
 #include "Word.h"
 
-Word::Word(const std::string& word, float x, float y)
-    : text(word), currentInput(""), posX(x), posY(y), speed(50.0f) {}
+Word::Word(const std::string& word)
+    : text(word), currentInput(""), wordText(font, ""){}
 
-void Word::update(float deltaTime) {
-    posY += speed * deltaTime;
-}
 
-void Word::render(sf::RenderWindow& window) const {
+
+void Word::render(sf::RenderWindow& window, float x, float y) const {
     sf::Font font("assets/Arial.ttf");
     sf::Text wordText = sf::Text(font, "", 30);
     // Przygotuj czcionkê, kolor itd. (póŸniej do poprawy)
 
     wordText.setFont(font);
     wordText.setString(currentInput + "_" + text.substr(currentInput.size()));
-    wordText.setPosition(sf::Vector2f(posX, posY));
+    wordText.setPosition(sf::Vector2f(x, y));
     wordText.setFillColor(sf::Color::White);
     window.draw(wordText);
 }
@@ -29,12 +27,10 @@ void Word::resetInput() {
 
 bool Word::processInput(char input) {
     if (input == text[currentInput.size()]) {
-        currentInput += input;
+        currentInput += input; // Dodanie poprawnie wpisanego znaku
         return true;
     }
-    else {
-        return false;
-    }
+    return false; // Niepoprawny znak
 }
 
 bool Word::isComplete() const {
